@@ -1,0 +1,48 @@
+# macOS
+.DS_Store
+*.swp
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+
+# Xcode
+SpamDetector/SpamDetector.xcodeproj/xcuserdata/
+SpamDetector/SpamDetector.xcodeproj/project.xcworkspace/xcuserdata/
+SpamDetector/SpamDetector.xcodeproj/project.xcworkspace/xcshareddata/
+DerivedData/
+*.xcuserstate
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Original raw data (contains personal SMS)
+sms.json
+sms_labeled.json
+TurkishSMSCollection.csv.xls
+
+# Model artifacts (too large for git, re-trainable)
+models/*.pkl
+
+# Temporary files
+chunks/
+ambiguous.json
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.zip
+
+# iMessage database (private)
+chat.db
+
+# Claude config
+.claude/
+
+# Review scripts (local only)
+review_app.py

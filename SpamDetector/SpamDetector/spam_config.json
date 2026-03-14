@@ -1,0 +1,56 @@
+{
+  "spam_keywords": [
+    "kampanya",
+    "indirim",
+    "fırsat",
+    "firsat",
+    "bonus",
+    "kazan",
+    "hediye",
+    "ücretsiz",
+    "ucretsiz",
+    "tıkla",
+    "tikla",
+    "kupon",
+    "bedava",
+    "promosyon",
+    "stok",
+    "sınırlı",
+    "kaçırma",
+    "hemen"
+  ],
+  "opt_out_patterns": [
+    "RET yaz",
+    "IPTAL yaz",
+    "SMS almak istemiyor",
+    "tanitim iptali",
+    "SMS Red"
+  ],
+  "phishing_domains": [
+    "pubit.jp",
+    "sniply.me",
+    "fre.to",
+    "t.ly/merit"
+  ],
+  "phishing_keywords": [
+    "Varliklariniz Dondurulmus",
+    "islemleriniz durdurulmustur",
+    "Aktivasyon Adresiniz",
+    "Finance Denetleme",
+    "Emtia Denetleme",
+    "MASAK Denetim",
+    "MASAK Tarafindan",
+    "Denetleme Kurulu Tarafindan",
+    "JACKPOT"
+  ],
+  "url_shorteners": [
+    "bit.ly",
+    "shorturl.at",
+    "tinyurl",
+    "cutt.ly",
+    "tnn.li",
+    "dijital.li",
+    "engho.me",
+    "dfurl.com"
+  ]
+}
