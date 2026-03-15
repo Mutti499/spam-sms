@@ -6,6 +6,8 @@ Runs on any machine. Produces a small, fast model suitable for mobile deployment
 """
 
 import os
+import sys
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 import re
 import json
 import pickle
@@ -195,7 +197,7 @@ for C in param_grid['C']:
         model = LinearSVC(C=C, class_weight=cw, max_iter=10000, random_state=42, dual='auto')
         scores = cross_val_score(model, X_train, y_train, cv=3, scoring='f1_macro')
         mean_f1 = scores.mean()
-        print(f"    C={C}, cw={cw} → F1={mean_f1:.4f}")
+        print(f"    C={C}, cw={cw} -> F1={mean_f1:.4f}")
         if mean_f1 > best_f1:
             best_f1 = mean_f1
             best_params = {'C': C, 'class_weight': cw}
@@ -229,8 +231,8 @@ print(f"Confusion Matrix:")
 print(f"              Pred Ham  Pred Spam")
 print(f"  Actual Ham   {cm[0][0]:6d}    {cm[0][1]:6d}")
 print(f"  Actual Spam  {cm[1][0]:6d}    {cm[1][1]:6d}")
-print(f"\n  False positives (ham→spam): {cm[0][1]}")
-print(f"  False negatives (spam→ham): {cm[1][0]}")
+print(f"\n  False positives (ham->spam): {cm[0][1]}")
+print(f"  False negatives (spam->ham): {cm[1][0]}")
 
 print("\n" + "=" * 60)
 print("TEST SET RESULTS")
@@ -244,8 +246,8 @@ print(f"Confusion Matrix:")
 print(f"              Pred Ham  Pred Spam")
 print(f"  Actual Ham   {cm[0][0]:6d}    {cm[0][1]:6d}")
 print(f"  Actual Spam  {cm[1][0]:6d}    {cm[1][1]:6d}")
-print(f"\n  False positives (ham→spam): {cm[0][1]}")
-print(f"  False negatives (spam→ham): {cm[1][0]}")
+print(f"\n  False positives (ham->spam): {cm[0][1]}")
+print(f"  False negatives (spam->ham): {cm[1][0]}")
 
 # Precision at different thresholds
 y_test_proba = model.predict_proba(X_test)
@@ -277,7 +279,7 @@ fp_texts = test_df.loc[fp_mask, 'text'].values
 if len(fp_texts) > 0:
     print(f"\nFalse Positives ({len(fp_texts)} ham classified as spam):")
     for t in fp_texts[:5]:
-        print(f"  → {t[:100]}...")
+        print(f"  -> {t[:100]}...")
 else:
     print("\nNo false positives! ✓")
 
@@ -287,7 +289,7 @@ fn_texts = test_df.loc[fn_mask, 'text'].values
 if len(fn_texts) > 0:
     print(f"\nFalse Negatives ({len(fn_texts)} spam classified as ham):")
     for t in fn_texts[:5]:
-        print(f"  → {t[:100]}...")
+        print(f"  -> {t[:100]}...")
 else:
     print("\nNo false negatives! ✓")
 
@@ -367,7 +369,7 @@ for msg in test_messages:
     proba = model.predict_proba(X_msg)[0]
     spam_p = proba[list(model.classes_).index('spam')]
 
-    icon = "🚫" if pred == "spam" else "✅"
+    icon = "[X]" if pred == "spam" else "[O]"
     print(f"  {icon} [{pred:4s}] (spam: {spam_p:.2%}) {msg[:70]}")
 
 print("\nDone!")
