@@ -18,7 +18,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import torch
 if torch.cuda.is_available():
     DEVICE = "cuda"
-    print(f"GPU: {torch.cuda.get_device_name(0)} ({torch.cuda.get_device_properties(0).total_mem / 1e9:.1f} GB)")
+    print(f"GPU: {torch.cuda.get_device_name(0)} ({torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB)")
 elif torch.backends.mps.is_available():
     DEVICE = "mps"
     print("Using Apple Silicon MPS")
@@ -137,7 +137,7 @@ training_args = TrainingArguments(
 
     # Optimization
     fp16=(DEVICE == "cuda"),  # Mixed precision on NVIDIA
-    dataloader_num_workers=4 if DEVICE == "cuda" else 0,
+    dataloader_num_workers=0,  # Windows requires __name__ guard for multiprocessing
     gradient_accumulation_steps=1,
 
     # Logging
@@ -204,8 +204,8 @@ print(f"Confusion Matrix:")
 print(f"              Pred Ham  Pred Spam")
 print(f"  Actual Ham   {cm[0][0]:6d}    {cm[0][1]:6d}")
 print(f"  Actual Spam  {cm[1][0]:6d}    {cm[1][1]:6d}")
-print(f"\n  False positives (ham→spam): {cm[0][1]}")
-print(f"  False negatives (spam→ham): {cm[1][0]}")
+print(f"\n  False positives (ham->spam): {cm[0][1]}")
+print(f"  False negatives (spam->ham): {cm[1][0]}")
 
 # ════════════════════════════════════════════════════════════
 # 7. Error analysis
@@ -221,13 +221,13 @@ fp_mask = (test_labels == 0) & (test_preds == 1)
 if fp_mask.sum() > 0:
     print(f"\nFalse Positives ({fp_mask.sum()}):")
     for t in test_texts[fp_mask][:5]:
-        print(f"  → {t[:100]}...")
+        print(f"  > {t[:100]}...")
 
 fn_mask = (test_labels == 1) & (test_preds == 0)
 if fn_mask.sum() > 0:
     print(f"\nFalse Negatives ({fn_mask.sum()}):")
     for t in test_texts[fn_mask][:5]:
-        print(f"  → {t[:100]}...")
+        print(f"  > {t[:100]}...")
 
 # ════════════════════════════════════════════════════════════
 # 8. Save model
@@ -271,7 +271,7 @@ for msg in test_messages:
     pred_label = ID2LABEL[pred_id]
     spam_p = probs[1].item()
 
-    icon = "🚫" if pred_label == "spam" else "✅"
+    icon = "[X]" if pred_label == "spam" else "[O]"
     print(f"  {icon} [{pred_label:4s}] (spam: {spam_p:.2%}) {msg[:70]}")
 
 print("\nDone!")

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Review All 22 Confident Re-labels</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e0e0e0; padding: 40px; }
+        h1 { text-align: center; margin-bottom: 10px; color: #fff; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 10px; font-size: 14px; }
+        .progress { text-align: center; color: #4ade80; margin-bottom: 30px; font-size: 14px; font-weight: 600; }
+        .card {
+            background: #1a1d27;
+            border: 1px solid #2a2d37;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .card.done { opacity: 0.5; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .card-header strong { font-size: 14px; }
+        .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-ham { background: #1a3a2a; color: #4ade80; }
+        .badge-spam { background: #3a1a1a; color: #f87171; }
+        .badge-changed { background: #1a2a3a; color: #60a5fa; }
+        .message-text {
+            background: #12141c;
+            border: 1px solid #2a2d37;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            word-break: break-word;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 8px 30px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #fff;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-ham { background: #166534; }
+        .btn-ham:hover { background: #15803d; }
+        .btn-spam { background: #991b1b; }
+        .btn-spam:hover { background: #b91c1c; }
+        .btn.selected { border-color: #fff; transform: translateY(-1px); }
+        .result {
+            text-align: center;
+            max-width: 750px;
+            margin: 30px auto;
+        }
+        .result-box {
+            background: #1a3a2a;
+            border: 1px solid #2a4a3a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        .result-box code {
+            display: block;
+            background: #12141c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #4ade80;
+            user-select: all;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        #submit-btn {
+            display: none;
+            margin: 30px auto;
+            padding: 14px 50px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        #submit-btn:hover { background: #3b82f6; }
+        .arrow { color: #60a5fa; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Review 22 Confident BERT Re-labels</h1>
+    <p class="subtitle">BERT was >85% confident on these. Confirm or override each one.</p>
+    <p class="progress" id="progress">0 / 22 reviewed</p>
+
+    <div id="cards"></div>
+    <button id="submit-btn" onclick="submit()">Save All Decisions</button>
+    <div class="result" id="result" style="display:none"></div>
+
+    <script>
+const items = [
+  {index:142, text:"Hepsiburada Premium ile kazandigin 6,15 TL Hepsipara, hesabina yuklendi! Hepsiparalarini 16.11.24 tarihine kadar kullanabilirsin. B001", original:"spam", bert:"ham", conf:99.98},
+  {index:735, text:"Surdurulebilir tercihlerinizle daha iyi bir gelecege birlikte adim atabilir, birikecek puanlarinizi bagisa donusturebilirsiniz. Step'e Yapi Kredi Mobil'den katilabilirsiniz: http://yukle.yapikredi.com SMS iptali icin H yazin 4944'e gonderin. M:0937002089200741 B016", original:"ham", bert:"spam", conf:99.99},
+  {index:769, text:"Degerli musterimiz, mobil hattiniza tanimli taahhudunuz 09/04/2024 tarihinde sona erecektir. Kampanya bitiminden sonra farkli bir paket / kampanyaniz yok ise Kamu Calisan 20GB Tarifesi Tarifesi uzerinden ucretlendirileceksiniz. B001", original:"spam", bert:"ham", conf:99.99},
+  {index:807, text:"Bu alisverisi GarantiPay ile kart bilginizi girmeden kolayca yapabilirdiniz. 29 Subat'a kadar 300 TL ve uzeri ilk GarantiPay isleminize 100 TL bonus kazanma firsati devam ediyor! https://garantibbva.com.tr/bonusflas SMS almamak icin IPT yazip 3342'ye ucretsiz gonderin. Mersis : 0879001756600379 B001", original:"spam", bert:"ham", conf:99.84},
+  {index:854, text:"<PERSON> <PERSON> \u00fceliğin \u00fczerinden oyun oynayarak kazand\u0131ğ\u0131n 245 BolPuan \u015fimdi hesab\u0131nda! B002", original:"spam", bert:"ham", conf:99.97},
+  {index:964, text:"Tekrar Deneyelim mi? TikTak \u00fcyeli\u011fini onaylayabilmemiz <PERSON> bilgilerini d\u00fczenleme ihtiyac\u0131m\u0131z var. Hemen uygulamaya gir, eksik kalan ad\u0131m\u0131 tamamla, TikTak'l\u0131 olman\u0131n avantajlar\u0131n\u0131 ya\u015famaya ba\u015fla. SMS almak istemiyorsan TIKTAKRET yaz\u0131p 4609'a g\u00f6nder. Mersis No: 0844102361600001 B356", original:"ham", bert:"spam", conf:100.0},
+  {index:1311, text:"Degerli musterimiz, Turk Telekom Faturasiz Mobil Ogrenci Tarifesine hos geldiniz. Tarifeniz ile ilgili ucretlendirmelere ve size ozel firsatlara www.turktelekom.com.tr uzerinden ulasabilirsiniz. B001", original:"spam", bert:"ham", conf:99.98},
+  {index:1521, text:"Degerli musterimiz, taahhudunuzun bitmek uzere oldugunun bilgisini vermek isteriz. Online Islemler uygulamamizi ziyaret ederek Tam Bana Gore Kampanya alanindaki iletisim ihtiyaciniza uygun tekliflerimizi goruntuleyebilirsiniz: https://turktelekom.ly/banaozel TT Mobil tanitim iptali icin IPT yazip 7672'ye gonderebilirsiniz. B001", original:"spam", bert:"ham", conf:99.93},
+  {index:1653, text:"Degerli m\u00fcsterimiz, 384019 numarali kaydiniza istinaden satin almak istediginiz tablet \u00fcr\u00fcn\u00fcm\u00fczde indirim bulunmamaktadir. Dilediginiz zaman bize Canli Destek ya da Whatsapp kanalimiz \u00fczerinden ulasabilirsiniz. B043", original:"spam", bert:"ham", conf:98.43},
+  {index:1763, text:"SKECHERS'a ho\u015f geldin <PERSON>. Seni sistemlerimize kaydettik. Detaylar <PERSON> rebrand.ly/KVKKAydinlatma. Mersis:0641031413000014 B016", original:"ham", bert:"spam", conf:97.54},
+  {index:1809, text:"Haz\u0131rsan 1966897 nolu Skechers T\u00fcrkiye paketin birazdan sende! Haritadan canl\u0131 takip <PERSON> linke t\u0131kla: https://url.packupp.com/YwMgeO B021", original:"ham", bert:"spam", conf:99.79},
+  {index:1905, text:"<PERSON> Gen\u00e7 Arkada\u015f\u0131m, Seyahatsever projemiz ile konakland\u0131\u011f\u0131n <PERSON> te\u015fekk\u00fcr ederiz. Gen\u00e7lik ve Spor Bakan\u0131 Dr. <PERSON> <PERSON>'nun sana bir mesaj\u0131 var. Okumak <PERSON> ba\u011flant\u0131y\u0131 t\u0131klayabilirsin: https://mesajkart.gsb.gov.tr/seyehatsever B016", original:"ham", bert:"spam", conf:99.99},
+  {index:1950, text:"DEPOYU SU BASMASI NEDENIYLE tum urunler zararina satilacak cift kisilik Merinos battaniye 420 degil 140 tek kisilik battaniye 220 degil 60 cift kisilik yorgan 250 degil 80 tek kisilik YORGAN 50 kaymaz hali 80 degil 29tl 6m hali 2200 degil 749 ACILIS 27 TEMMUZ \u00c7AR\u015eAMBA SAAT 10:00 HARUN HALI SARAYI HACIKARA MAH MUHSIN YAZICIOGLU CAD BEYPAZARI MUFTULUGU KARSISI BIM YANI BEYPAZARI ANKARA TEL 05424218921 -- 05412371387 red icin FDN yaz 4609 gonder MERSIS 46210950490 B175", original:"spam", bert:"ham", conf:99.91},
+  {index:2825, text:"Kuzeyden Damacana size \u00f6zel fiyat\u0131yla sadece 7,50 TL! GetirSu'dan sipari\u015finizi \u015fimdi verin, damacanan\u0131z\u0131 19,50 TL yerine sadece 7,50 TL'ye getirelim! https://getir.app.link/duXhAiLIseb Mersis:0394048265800010 SMS reddi <PERSON>: http://onay.li/PU34 B021", original:"ham", bert:"spam", conf:99.77},
+  {index:2960, text:"Getir mutlulu\u011fuyla tan\u0131\u015f\u0131n diye ilk sipari\u015finize 30 TL hediye! Hemen sipari\u015f verin, ihtiya\u00e7lar\u0131n\u0131z\u0131 dakikalar i\u00e7inde getirelim: https://getir.app.link/CugZHYSHecb Mersis:0394048265800010 SMS reddi <PERSON>: http://onay.li/PU34 B021", original:"ham", bert:"spam", conf:99.97},
+  {index:3500, text:"Paket degisikliginizle birlikte baslayacaginiz yeni kampanyanizi 24.10.2021ten once iptal etmeniz durumunda eski kampanyanizdan saglanan 75,78TL kampanya faydasi erken iptal bedelinize dahil edilecektir. Detaylar icin turkcell.com.tr B002", original:"spam", bert:"ham", conf:99.98},
+  {index:4396, text:"Merhaba, \"Introduction to Machine Learning\" e\u011fitimi birazdan ba\u015fl\u0131yor! E\u011fitimi, https://datacamp.compec.org/login?id=qWfERJVGPGtwNdsdvzEd adresinden veya https://community.globalaihub.com/ \u00fczerinden takip edebilirsiniz! Sms iptali: tawk.to/compec B273", original:"spam", bert:"ham", conf:98.47},
+  {index:4506, text:"Yillik Katlama Kampanyasi kontratiniz 24.11.2020 tarihinde sona erecektir. Avantajli fiyatlardan yararlanmaya devam etmek icin https://dijital.li/hIeoM B002", original:"spam", bert:"ham", conf:99.98},
+  {index:5815, text:"Batikent ULUDAG SULTAN SU da Her 19 LT DAMACANA ALIMINDA 2 Adet 0.5LT PETSU HEDiYE! UCRETSiZ DEGiSiM! 03125666544 05309224465 (JEST IPTAL 4609)T16276080684 B373", original:"spam", bert:"ham", conf:99.97},
+  {index:5827, text:"A\u00e7\u0131 Ankara Koleji Bursluluk S\u0131nav\u0131 <PERSON> yapm\u0131\u015f oldu\u011funuz ba\u015fvuru i\u015fleme al\u0131nm\u0131\u015ft\u0131r. 12 Ocak saat 13:00'da A\u00e7\u0131 Ankara Koleji Yenimahalle Kamp\u00fcs\u00fcn'de s\u0131nava kat\u0131labilirsiniz. \u0130leti\u015fim Tel : 444 4 309 B021", original:"spam", bert:"ham", conf:88.95},
+  {index:6192, text:"Link Gelir ile kazandigin 3,44 TL Hepsipara, hesabina yuklendi! Hepsiparalarini 20.01.25 tarihine kadar kullanabilirsin. B001", original:"spam", bert:"ham", conf:99.98},
+  {index:6205, text:"De\u011ferli Kat\u0131l\u0131mc\u0131m\u0131z, Kariyer ve Yetkinlik Bulu\u015fmalar\u0131 ba\u015fl\u0131yor! Etkinli\u011fe kat\u0131lmak <PERSON>: canliyayin.ssa.gov.tr Mesaj listesinden \u00e7\u0131kmak <PERSON> \"TREGITIM IPTAL\" yaz\u0131p 08006363636 \u00fccretsiz g\u00f6nderiniz. B026", original:"ham", bert:"spam", conf:93.56}
+];
+
+const container = document.getElementById('cards');
+const decisions = {};
+
+items.forEach((item, i) => {
+    const changeDir = item.original + ' <span class="arrow">-&gt;</span> ' + item.bert;
+    container.innerHTML += `
+    <div class="card" id="card-${i}">
+        <div class="card-header">
+            <strong>#${i+1} (Index ${item.index})</strong>
+            <div class="badges">
+                <span class="badge badge-${item.original}">Was: ${item.original.toUpperCase()}</span>
+                <span class="badge badge-changed">BERT: ${item.bert.toUpperCase()} (${item.conf}%)</span>
+            </div>
+        </div>
+        <div class="message-text">${escapeHtml(item.text)}</div>
+        <div class="buttons">
+            <button class="btn btn-ham" onclick="pick(${i}, 'ham')">HAM</button>
+            <button class="btn btn-spam" onclick="pick(${i}, 'spam')">SPAM</button>
+        </div>
+    </div>`;
+});
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function pick(i, label) {
+    decisions[i] = { index: items[i].index, label: label };
+    const card = document.getElementById('card-' + i);
+    card.querySelectorAll('.btn').forEach(b => b.classList.remove('selected'));
+    card.querySelector(label === 'ham' ? '.btn-ham' : '.btn-spam').classList.add('selected');
+    card.classList.add('done');
+
+    const count = Object.keys(decisions).length;
+    document.getElementById('progress').textContent = count + ' / 22 reviewed';
+
+    if (count === 22) {
+        document.getElementById('submit-btn').style.display = 'block';
+    }
+}
+
+function submit() {
+    const result = Object.values(decisions);
+    const json = JSON.stringify(result);
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('result').innerHTML = `
+        <h2>Done! Copy this and paste it to Claude Code:</h2>
+        <div class="result-box">
+            <code>${json}</code>
+        </div>`;
+}
+    </script>
+</body>
+</html>
