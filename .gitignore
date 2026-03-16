@@ -44,5 +44,13 @@ chat.db
 # Claude config
 .claude/
 
-# Review scripts (local only)
-review_app.py
+# Review/temp scripts (local only)
+review_*.html
+review_*.py
+to_review*.json
+relabel_*.py
+rebuild_splits.py
+categorize_spam.py
+SYNTHETIC_DATA_PROMPT.md
+label_corrections.json
+ML_Course_Prompt.md

@@ -26,6 +26,7 @@ class SpamClassifier {
         let intercept: Double
         let idf: [Double]
         let features: [String: FeatureInfo]
+        let structural_weights: [String: Double]?
     }
 
     struct SpamConfig: Codable {
@@ -164,7 +165,78 @@ class SpamClassifier {
             score += tfidfVal * modelData.features[ngram]!.w
         }
 
+        // Add structural features (learned weights from training)
+        if let sw = modelData.structural_weights {
+            let sf = extractStructuralFeatures(text)
+            for (name, value) in sf {
+                if let weight = sw[name] {
+                    score += value * weight
+                }
+            }
+        }
+
         return score
+    }
+
+    // MARK: - Structural Features (learned weights)
+
+    private func extractStructuralFeatures(_ text: String) -> [(String, Double)] {
+        let lower = text.lowercased()
+        let length = Double(text.count)
+        let safeLen = max(length, 1.0)
+        let words = text.split(separator: " ")
+        let wordCount = max(Double(words.count), 1.0)
+
+        let urlCount = Double(text.components(separatedBy: "http").count - 1 + text.components(separatedBy: "www.").count - 1)
+        let shorteners = ["bit.ly", "shorturl", "tinyurl", "t.co/", "cutt.ly", "tnn.li", "t2m.io", "dijital.li", "dfurl", "engho.me"]
+        let hasShortUrl = shorteners.contains(where: { lower.contains($0) }) ? 1.0 : 0.0
+        let digitRatio = Double(text.filter { $0.isNumber }.count) / safeLen
+        let upperRatio = Double(text.filter { $0.isUppercase }.count) / safeLen
+        let specialRatio = Double(text.filter { !$0.isLetter && !$0.isNumber && !$0.isWhitespace }.count) / safeLen
+        let hasCurrency = (lower.range(of: #"\btl\b"#, options: .regularExpression) != nil || lower.contains("₺")) ? 1.0 : 0.0
+        let hasPrice = lower.range(of: #"\d+[\.,]?\d*\s*tl"#, options: .regularExpression) != nil ? 1.0 : 0.0
+        let hasPhone = lower.range(of: #"\d[\d\s\-]{8,}\d"#, options: .regularExpression) != nil ? 1.0 : 0.0
+        let exclCount = Double(text.filter { $0 == "!" }.count)
+        let questCount = Double(text.filter { $0 == "?" }.count)
+        let hasOptOut = config.opt_out_patterns.contains(where: { lower.contains($0.lowercased()) }) ? 1.0 : 0.0
+        let hasCTA = lower.range(of: #"hemen.*(tıkla|tikla|kaydol|başvur|basvur|indir|ara)"#, options: .regularExpression) != nil ? 1.0 : 0.0
+        let hasDiscount = lower.range(of: #"%\d+"#, options: .regularExpression) != nil ? 1.0 : 0.0
+        let hasUrgency = lower.range(of: #"son \d+ gün|son gün|son saatler|son \d+ hafta"#, options: .regularExpression) != nil ? 1.0 : 0.0
+
+        var spamKwCount = 0.0
+        for kw in config.spam_keywords {
+            if lower.contains(kw) { spamKwCount += 1.0 }
+        }
+
+        let hasSenderCode = lower.range(of: #"\bb\d{3}\b"#, options: .regularExpression) != nil ? 1.0 : 0.0
+        let hasMersis = lower.contains("mersis") ? 1.0 : 0.0
+        let allCapsRatio = Double(words.filter { $0.count > 2 && $0 == $0.uppercased() && $0.first?.isLetter == true }.count) / wordCount
+
+        return [
+            ("length", length),
+            ("word_count", wordCount),
+            ("log_length", log(1.0 + length)),
+            ("url_count", urlCount),
+            ("has_shortened_url", hasShortUrl),
+            ("digit_ratio", digitRatio),
+            ("uppercase_ratio", upperRatio),
+            ("special_char_ratio", specialRatio),
+            ("has_currency", hasCurrency),
+            ("has_price_pattern", hasPrice),
+            ("has_phone_number", hasPhone),
+            ("exclamation_count", exclCount),
+            ("question_count", questCount),
+            ("has_opt_out", hasOptOut),
+            ("has_call_to_action", hasCTA),
+            ("has_discount_pattern", hasDiscount),
+            ("has_urgency", hasUrgency),
+            ("spam_keyword_count", spamKwCount),
+            ("spam_keyword_density", spamKwCount / wordCount),
+            ("has_sender_code", hasSenderCode),
+            ("has_mersis", hasMersis),
+            ("allcaps_word_ratio", allCapsRatio),
+            ("emoji_count", 0.0),
+        ]
     }
 
     // MARK: - Rule-based Pre-filter
